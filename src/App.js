@@ -1,21 +1,29 @@
-import React, { Component } from 'react';
-import logo from './logo.svg';
+import React from 'react';
 import './App.css';
+import Toolbar from './toolbar/Toolbar.js';
+import Map from './map/Map.js';
 
-class App extends Component {
-  render() {
+class AppView extends React.Component {
+
+  renderApp() {
     return (
       <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <h1 className="App-title">Welcome to React</h1>
-        </header>
-        <p className="App-intro">
-          To get started, edit <code>src/App.js</code> and save to reload.
-        </p>
+        <Toolbar />
+        <Map />
       </div>
     );
   }
+
+  render() {
+    return this.renderApp();
+  }
 }
 
-export default App;
+class AppContainer extends React.Component {
+
+  render() {
+    return <AppView {...this.state} />;
+  }
+}
+
+export default AppContainer;

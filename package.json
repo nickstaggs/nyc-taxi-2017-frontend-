@@ -3,9 +3,12 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "d3": "^5.4.0",
     "react": "^16.4.0",
     "react-dom": "^16.4.0",
-    "react-scripts": "1.1.4"
+    "react-scripts": "1.1.4",
+    "roughjs": "^2.1.3",
+    "wired-elements": "^0.5.8"
   },
   "scripts": {
     "start": "react-scripts start",
