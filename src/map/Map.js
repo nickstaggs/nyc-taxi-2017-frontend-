@@ -2,10 +2,12 @@ import React from 'react';
 import './../App.css';
 import Rough from 'roughjs';
 import *  as d3 from 'd3';
+import * as _ from 'lodash';
+import Nyc from './nyc-map'
 
 const styles = {
   width: "70%",
-  height: "100%",
+  height: "98.25vh",
   float: "right"
 }
 
@@ -20,11 +22,12 @@ class MapView extends React.Component {
   }
 
   renderMap() {
+
     return (
       <div id="map" style={styles}>
-        <svg ref={node => this.node = this.props.map}
-            width={500} height={500}>
-      </svg>
+        <svg id="nyc-map" height="100%" width="100%">
+          {this.props.map}
+        </svg>
       </div>
     );
   }
@@ -44,24 +47,23 @@ class MapView extends React.Component {
 }
 
 class MapContainer extends React.Component {
-  state = { loading: true };
+  state = { loading: true, map: [] };
 
-  async componentDidMount() {
+  componentDidMount() {
 
-    let map = this.map;
-    let rc = Rough.svg(map, {
-      async: true,
-      options: {
-        simplification: 0.2, roughness: 0.65
-      }
-    });
+    // let map = this.state.map;
+    // let rc = Rough.svg(map, {
+    //   async: true,
+    //   options: {
+    //     simplification: 0.2, roughness: 0.65
+    //   }
+    // });
 
     var w = 1000;
     var h = 600;
 
-    //Define path generator
     var projection = d3.geoAlbers()
-                          .center([1.5,40.7])
+                          .center([1.63,40.7])
                           .rotate([75.527,0])
                           .parallels([41,44])
                           .translate([w/2,h/2])
@@ -71,23 +73,17 @@ class MapContainer extends React.Component {
     var path = d3.geoPath()
                      .projection(projection);
 
-    d3.json("./nyc-map.json", function(json) {
+    let zones = _.map(Nyc.features, (feature, i) => {
 
-      //var geojson = topojson.feature(json, json.objects.NycTaxiZones);
-      //Bind data and create one path per GeoJSON feature
-
-      var afterPeriod = /[^.]+$/;
-      map.selectAll("path")
-         .data(json.features)
-         .enter()
-         .append("path")
-         .attr("d", path)
-         .attr("id", function(d) { return d.properties.locationid; })
-         .attr("zone", function(d) { return d.properties.zone; })
-         .attr("class", function(d) { return d.properties.borough; });
-
-      this.setState( {loading: false, map});
+      // generate the SVG path from the geometry
+      // let p = rc.path(path(feature));
+      let p = path(feature);
+      return <path d={p} key={i} locationid={feature.properties.locationid}
+                            zone={feature.properties.zone}
+                            className={feature.properties.borough}/>;
     });
+
+    this.setState( {loading: false, map: zones});
   }
 
   render() {
