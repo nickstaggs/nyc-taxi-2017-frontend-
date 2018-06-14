@@ -13,6 +13,30 @@ const styles = {
 
 class MapView extends React.Component {
 
+  state = {zoomTransform: null};
+
+  zoom = d3.zoom()
+                  .scaleExtent([-5, 20])
+                  .translateExtent([[-100, -100], [this.props.width+100, this.props.height+100]])
+                  .extent([[-100, -100], [this.props.width+100, this.props.height+100]])
+                  .on("zoom", this.zoomed.bind(this));
+
+  componentDidMount() {
+    d3.select(this.refs.svg)
+      .call(this.zoom);
+  }
+
+  componentDidUpdate() {
+    d3.select(this.refs.svg)
+      .call(this.zoom);
+  }
+
+  zoomed() {
+    this.setState({
+      zoomTransform: d3.event.transform
+    });
+  }
+
   renderLoading() {
     return <div>Loading...</div>;
   }
@@ -22,10 +46,12 @@ class MapView extends React.Component {
   }
 
   renderMap() {
+    const { zoomTransform } = this.state,
+          { width, height } = this.props;
 
     return (
-      <div id="map" style={styles}>
-        <svg id="nyc-map" height="100%" width="100%">
+      <div id="map" style={styles} ref="svg">
+        <svg id="nyc-map" height={height} width={width}>
           {this.props.map}
         </svg>
       </div>
@@ -47,7 +73,13 @@ class MapView extends React.Component {
 }
 
 class MapContainer extends React.Component {
-  state = { loading: true, map: [] };
+  state = { loading: true, map: [], zoomTransform: null };
+
+  zoom = d3.zoom()
+                  .scaleExtent([-5, 20])
+                  .translateExtent([[-100, -100], [this.props.width+100, this.props.height+100]])
+                  .extent([[-100, -100], [this.props.width+100, this.props.height+100]])
+                  .on("zoom", this.zoomed.bind(this));
 
   componentDidMount() {
 
@@ -57,16 +89,13 @@ class MapContainer extends React.Component {
     //   options: {
     //     simplification: 0.2, roughness: 0.65
     //   }
-    // });
-
-    var w = 1000;
-    var h = 600;
+    //
 
     var projection = d3.geoAlbers()
                           .center([1.63,40.7])
                           .rotate([75.527,0])
                           .parallels([41,44])
-                          .translate([w/2,h/2])
+                          .translate([this.state.width/2,this.state.height/2])
                           .scale(79000);
 
     //Define path generator
@@ -84,10 +113,30 @@ class MapContainer extends React.Component {
     });
 
     this.setState( {loading: false, map: zones});
+
+    d3.select(this.refs.svg)
+      .call(this.zoom);
+  }
+
+  componentDidUpdate() {
+    d3.select(this.refs.svg)
+      .call(this.zoom);
+  }
+
+  zoomed() {
+    this.setState({
+      zoomTransform: d3.event.transform
+    });
   }
 
   render() {
-    return <MapView {...this.state} />;
+    const { width, height } = this.props;
+
+    return (
+      <svg width={width} height={height} ref="svg">
+        <MapView {...this.state} />;
+      </svg>
+    )
   }
 }
 
