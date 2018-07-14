@@ -13,61 +13,76 @@ const styles = {
 
 class MapView extends React.Component {
 
-  constructor(props) {
-    super(props);
-    this.updateD3(props);
+  state = {zoomTransform: null};
+
+  zoom = d3.zoom()
+                  .scaleExtent([-5, 20])
+                  .translateExtent([[-100, -100], [this.props.width+100, this.props.height+100]])
+                  .extent([[-100, -100], [this.props.width+100, this.props.height+100]])
+                  .on("zoom", this.zoomed.bind(this));
+
+  componentDidMount() {
+    d3.select(this.refs.svg)
+      .call(this.zoom);
   }
 
-  componentWillUpdate(nextProps) {
-    this.updateD3(nextProps);
+  componentDidUpdate() {
+    d3.select(this.refs.svg)
+      .call(this.zoom);
   }
 
-  updateD3(props) {
-    const { map, width, height, zoomTransform, zoomType } = props;
+  zoomed() {
+    this.setState({
+      zoomTransform: d3.event.transform
+    });
+  }
 
-    this.xScale = d3.scaleLinear()
-                   .domain([0, d3.max(d3.values(map), ([x, y]) => x)])
-                   .range([0, width]),
-    this.yScale = d3.scaleLinear()
-                   .domain([0, d3.max(d3.values(map), ([x, y]) => y)])
-                   .range([0, height]);
- }
+  renderLoading() {
+    return <div>Loading...</div>;
+  }
 
- get transform() {
-    const { x, y, zoomTransform, zoomType } = this.props;
-    let transform = "";
+  renderError() {
+    return <div>Error: {this.props.error}</div>;
+  }
 
-    if (zoomTransform && zoomType === "scale") {
-      transform = `translate(${x + zoomTransform.x}, ${y + zoomTransform.y}) scale(${zoomTransform.k})`;
-    }
-    else{
-      transform = `translate(${x}, ${y})`;
-    }
+  renderMap() {
+    const { zoomTransform } = this.state,
+          { width, height } = this.props;
 
-    return transform;
+    return (
+      <div id="map" style={styles} ref="svg">
+        <svg id="nyc-map" height={height} width={width}>
+          {this.props.map}
+        </svg>
+      </div>
+    );
   }
 
   render() {
-    return (
-      <g transform={this.transform} ref="scatterplot">
-        {this.props.map}
-      </g>
-    )
+
+    if (this.props.loading) {
+      return this.renderLoading();
+    }
+    else if (this.props.map){
+      return this.renderMap();
+    }
+    else {
+      return this.renderError();
+    }
   }
 }
 
 class MapContainer extends React.Component {
-
-
   state = { loading: true, map: [], zoomTransform: null };
 
   zoom = d3.zoom()
-                .scaleExtent([-5, 5])
-                .translateExtent([[-100, -100], [this.props.width+100, this.props.height+100]])
-                .extent([[-100, -100], [this.props.width+100, this.props.height+100]])
-                .on("zoom", this.zoomed.bind(this))
+                  .scaleExtent([-5, 20])
+                  .translateExtent([[-100, -100], [this.props.width+100, this.props.height+100]])
+                  .extent([[-100, -100], [this.props.width+100, this.props.height+100]])
+                  .on("zoom", this.zoomed.bind(this));
 
   componentDidMount() {
+
     // let map = this.state.map;
     // let rc = Rough.svg(map, {
     //   async: true,
@@ -100,34 +115,18 @@ class MapContainer extends React.Component {
     this.setState( {loading: false, map: zones});
 
     d3.select(this.refs.svg)
-      .call(this.zoom)
+      .call(this.zoom);
   }
 
   componentDidUpdate() {
     d3.select(this.refs.svg)
-      .call(this.zoom)
+      .call(this.zoom);
   }
 
   zoomed() {
     this.setState({
       zoomTransform: d3.event.transform
     });
-  }
-
-  render() {
-    const { zoomTransform } = this.state,
-          { width, height } = this.props;
-
-    return (
-      <svg width={width} height={height} ref="svg">
-        <MapView map={this.state.map}
-                     x={0} y={0}
-                     width={width}
-                     height={height}
-                     zoomTransform={zoomTransform}
-                     zoomType="scale" />
-      </svg>
-    )
   }
 
   render() {

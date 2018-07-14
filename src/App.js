@@ -9,7 +9,7 @@ class AppView extends React.Component {
     return (
       <div className="App">
         <Toolbar />
-        <Map height={500} width={1000}/>
+        <Map />
       </div>
     );
   }
