@@ -21,12 +21,29 @@ class MapView extends React.Component {
     return <div>Error: {this.props.error}</div>;
   }
 
+  componentDidUpdate() {
+    var svg = d3.select("svg");
+
+    this.zoom = d3.zoom()
+      .scaleExtent([.75, 8])
+      .on("zoom", this.zoomed);
+
+    svg.call(this.zoom);
+  }
+
+  zoomed() {
+    var g = d3.select("g");
+
+    g.style("stroke-width", 1.5 / d3.event.transform.k + "px");
+    g.attr("transform", d3.event.transform);
+  }
+
   renderMap() {
 
     return (
       <div id="map" style={styles}>
         <svg id="nyc-map" height="100%" width="100%">
-          {this.props.map}
+          <g>{this.props.map}</g>
         </svg>
       </div>
     );
@@ -75,15 +92,13 @@ class MapContainer extends React.Component {
 
     let zones = _.map(Nyc.features, (feature, i) => {
 
-      // generate the SVG path from the geometry
-      // let p = rc.path(path(feature));
       let p = path(feature);
       return <path d={p} key={i} locationid={feature.properties.locationid}
                             zone={feature.properties.zone}
                             className={feature.properties.borough}/>;
     });
 
-    this.setState( {loading: false, map: zones});
+    this.setState( {loading: false, map: zones} );
   }
 
   render() {

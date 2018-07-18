@@ -1,5 +1,4 @@
 import React from 'react';
-import Cards from './Cards.js';
 import './../App.css';
 
 const styles = {
@@ -17,7 +16,7 @@ class ToolbarView extends React.Component {
     return (
       <div style={styles}>
         <h2>NYC Yellow Taxi 2017 Data</h2>
-        <Cards />
+        
       </div>
     );
   }
