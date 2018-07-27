@@ -100,7 +100,9 @@ class MapContainer extends React.Component {
       let p = path(feature);
       return <path d={p} key={i} locationid={feature.properties.locationid}
                             zone={feature.properties.zone}
-                            className={feature.properties.borough}/>;
+                            className={feature.properties.borough}>
+                <title>{feature.properties.zone}</title>        
+             </path>;
     });
 
     this.setState( {loading: false, map: zones} );
