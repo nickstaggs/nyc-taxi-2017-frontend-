@@ -3,11 +3,15 @@ import './App.css';
 import Toolbar from './toolbar/Toolbar.js';
 import Map from './map/Map.js';
 
+const styles = {
+  color: "blue"
+}
+
 class AppView extends React.Component {
 
   renderApp() {
     return (
-      <div className="App">
+      <div style={styles} className="App">
         <Toolbar />
         <Map />
       </div>

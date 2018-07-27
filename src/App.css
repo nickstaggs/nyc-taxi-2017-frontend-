@@ -63,3 +63,11 @@ path:hover {
 .EWR {
     fill: purple;
 }
+
+.floatRight {
+  float: right;
+}
+
+.floatLeft {
+  float: left;
+}

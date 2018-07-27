@@ -7,8 +7,13 @@ import Nyc from './nyc-map'
 
 const styles = {
   width: "70%",
-  height: "98.25vh",
-  float: "right"
+  height: "100vh",
+  float: "right",
+  overflow: "hidden"
+}
+
+const svgStyles = {
+  fill: "aqua"
 }
 
 class MapView extends React.Component {
@@ -42,7 +47,7 @@ class MapView extends React.Component {
 
     return (
       <div id="map" style={styles}>
-        <svg id="nyc-map" height="100%" width="100%">
+        <svg style={svgStyles} id="nyc-map" height="100%" width="100%">
           <g>{this.props.map}</g>
         </svg>
       </div>

@@ -3,11 +3,18 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@material-ui/core": "^1.4.0",
+    "@material-ui/icons": "^2.0.0",
+    "autosuggest-highlight": "^3.1.1",
     "d3": "^5.4.0",
+    "downshift": "^2.0.19",
     "lodash": "^4.17.10",
+    "material-ui": "^0.20.1",
     "react": "^16.4.0",
+    "react-autosuggest": "^9.3.4",
     "react-dom": "^16.4.0",
     "react-scripts": "1.1.4",
+    "react-select": "^2.0.0",
     "roughjs": "^2.1.3",
     "wired-elements": "^0.5.8"
   },
