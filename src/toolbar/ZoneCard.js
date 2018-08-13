@@ -6,9 +6,11 @@ import CardContent from '@material-ui/core/CardContent';
 import Switch from '@material-ui/core/Switch';
 import AutoCompleteDropdown from './AutoCompleteDropdown.js';
 import Icon from '@material-ui/core/Icon';
+import Typography from '@material-ui/core/Typography'
 
 const styles = {
-  margin:"5%"
+  margin:'5%',
+  overflow: 'visible'
 }
 
 const flexStyles = {
@@ -44,6 +46,11 @@ class ZoneCardView extends React.Component {
           <AutoCompleteDropdown label='Pickup' style={flexStyles}/>
           <Icon style={arrowStyles}>arrow_forward</Icon>
           <AutoCompleteDropdown label='Dropoff' style={flexStyles}/>
+        </CardContent>
+        <CardContent>
+          <p>
+            Press Submit to see data for the selected route.
+          </p>
         </CardContent>
       </Card>
     );

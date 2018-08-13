@@ -109,7 +109,7 @@ function getSuggestions(inputValue) {
 const styles = theme => ({
     root: {
         flexGrow: 1,
-        height: 250,
+        height: 0,
         width: '35%'
     },
     container: {
