@@ -9,42 +9,42 @@ import Paper from '@material-ui/core/Paper';
 import MenuItem from '@material-ui/core/MenuItem';
 import Chip from '@material-ui/core/Chip';
 
-const suggestions = [
-    { label: 'Afghanistan' },
-    { label: 'Aland Islands' },
-    { label: 'Albania' },
-    { label: 'Algeria' },
-    { label: 'American Samoa' },
-    { label: 'Andorra' },
-    { label: 'Angola' },
-    { label: 'Anguilla' },
-    { label: 'Antarctica' },
-    { label: 'Antigua and Barbuda' },
-    { label: 'Argentina' },
-    { label: 'Armenia' },
-    { label: 'Aruba' },
-    { label: 'Australia' },
-    { label: 'Austria' },
-    { label: 'Azerbaijan' },
-    { label: 'Bahamas' },
-    { label: 'Bahrain' },
-    { label: 'Bangladesh' },
-    { label: 'Barbados' },
-    { label: 'Belarus' },
-    { label: 'Belgium' },
-    { label: 'Belize' },
-    { label: 'Benin' },
-    { label: 'Bermuda' },
-    { label: 'Bhutan' },
-    { label: 'Bolivia, Plurinational State of' },
-    { label: 'Bonaire, Sint Eustatius and Saba' },
-    { label: 'Bosnia and Herzegovina' },
-    { label: 'Botswana' },
-    { label: 'Bouvet Island' },
-    { label: 'Brazil' },
-    { label: 'British Indian Ocean Territory' },
-    { label: 'Brunei Darussalam' },
-];
+// const suggestions = [
+//     { label: 'Afghanistan' },
+//     { label: 'Aland Islands' },
+//     { label: 'Albania' },
+//     { label: 'Algeria' },
+//     { label: 'American Samoa' },
+//     { label: 'Andorra' },
+//     { label: 'Angola' },
+//     { label: 'Anguilla' },
+//     { label: 'Antarctica' },
+//     { label: 'Antigua and Barbuda' },
+//     { label: 'Argentina' },
+//     { label: 'Armenia' },
+//     { label: 'Aruba' },
+//     { label: 'Australia' },
+//     { label: 'Austria' },
+//     { label: 'Azerbaijan' },
+//     { label: 'Bahamas' },
+//     { label: 'Bahrain' },
+//     { label: 'Bangladesh' },
+//     { label: 'Barbados' },
+//     { label: 'Belarus' },
+//     { label: 'Belgium' },
+//     { label: 'Belize' },
+//     { label: 'Benin' },
+//     { label: 'Bermuda' },
+//     { label: 'Bhutan' },
+//     { label: 'Bolivia, Plurinational State of' },
+//     { label: 'Bonaire, Sint Eustatius and Saba' },
+//     { label: 'Bosnia and Herzegovina' },
+//     { label: 'Botswana' },
+//     { label: 'Bouvet Island' },
+//     { label: 'Brazil' },
+//     { label: 'British Indian Ocean Territory' },
+//     { label: 'Brunei Darussalam' },
+// ];
 
 function renderInput(inputProps) {
     const { InputProps, classes, ref, ...other } = inputProps;
@@ -89,7 +89,7 @@ renderSuggestion.propTypes = {
     suggestion: PropTypes.shape({ label: PropTypes.string }).isRequired,
 };
 
-function getSuggestions(inputValue) {
+function getSuggestions(inputValue, suggestions) {
     let count = 0;
 
     return suggestions.filter(suggestion => {
@@ -132,41 +132,74 @@ const styles = theme => ({
 
 let popperNode;
 
-function AutoCompleteDropdown(props) {
-    const { classes, label} = props;
-    const floatDir = label == "Pickup" ? "Left" : "Right"
+class AutoCompleteDropdown extends React.Component {
 
-    return (
-        <div className={classes.root + " float" + floatDir}>
-            <Downshift>
-                {({ getInputProps, getItemProps, isOpen, inputValue, selectedItem, highlightedIndex }) => (
-                    <div className={classes.container}>
-                        {renderInput({
-                            fullWidth: true,
-                            classes,
-                            InputProps: getInputProps({
-                                placeholder: label,
-                                id: 'integration-downshift-simple',
-                            }),
-                        })}
-                        {isOpen ? (
-                            <Paper className={classes.paper} square>
-                                {getSuggestions(inputValue).map((suggestion, index) =>
-                                    renderSuggestion({
-                                        suggestion,
-                                        index,
-                                        itemProps: getItemProps({ item: suggestion.label }),
-                                        highlightedIndex,
-                                        selectedItem,
-                                    }),
-                                )}
-                            </Paper>
-                        ) : null}
-                    </div>
-                )}
-            </Downshift>
-        </div>
-    );
+    componentDidMount() {
+        const zonesUrl = "http://localhost:8080/api/zones/";
+        fetch(zonesUrl)
+            .then(res => res.json())
+            .then(
+                zones => {
+                    var zoneNameKeys = zones.map(zone => {
+                        return {key: zone.locationId, label: zone.zone};
+                    });
+
+                    this.setState({zones: zoneNameKeys});
+                },
+                error => {
+                    this.setState({error: error});
+                }
+            );
+    }
+
+    renderLoading() {
+        return <div>Loading...</div>;
+    }
+
+    renderError() {
+        return <div>I'm sorry please try again.</div>;
+    }
+
+    renderAutoCompleteDropdown() {
+        const { classes, label} = this.props;
+        const floatDir = label == "Pickup" ? "Left" : "Right"
+
+        return (
+            <div className={classes.root + " float" + floatDir}>
+                <Downshift>
+                    {({ getInputProps, getItemProps, isOpen, inputValue, selectedItem, highlightedIndex }) => (
+                        <div className={classes.container}>
+                            {renderInput({
+                                fullWidth: true,
+                                classes,
+                                InputProps: getInputProps({
+                                    placeholder: label,
+                                    id: 'integration-downshift-simple',
+                                }),
+                            })}
+                            {isOpen ? (
+                                <Paper className={classes.paper} square>
+                                    {getSuggestions(inputValue, this.state.zones).map((suggestion, index) =>
+                                        renderSuggestion({
+                                            suggestion,
+                                            index,
+                                            itemProps: getItemProps({ item: suggestion.label }),
+                                            highlightedIndex,
+                                            selectedItem,
+                                        }),
+                                    )}
+                                </Paper>
+                            ) : null}
+                        </div>
+                    )}
+                </Downshift>
+            </div>
+        );
+    }
+
+    render() {
+        return this.renderAutoCompleteDropdown();
+    }
 }
 
 AutoCompleteDropdown.propTypes = {
