@@ -38,14 +38,24 @@ class ZoneCardView extends React.Component {
     return <div>I'm sorry please try again.</div>;
   }
 
+  pickupSelected = () => {this.props.pickupSelection !== null;}
+
+  dropoffSelected = () => { this.props.dropoffSelection !== null; }
+
   renderZoneCard() {
     return (
       <Card style={styles}>
         
         <CardContent style={contentStyles}>
-          <AutoCompleteDropdown label='Pickup' style={flexStyles}/>
+          {this.pickupSelected ? 
+            <AutoCompleteDropdown label='Pickup' style={flexStyles} selection={this.props.pickupSelection} />
+            :
+            <AutoCompleteDropdown label='Pickup' style={flexStyles}/>}
           <Icon style={arrowStyles}>arrow_forward</Icon>
-          <AutoCompleteDropdown label='Dropoff' style={flexStyles}/>
+          {this.dropoffSelected ?
+            <AutoCompleteDropdown label='Dropoff' style={flexStyles} selection={this.props.dropoffSelection} />
+            :
+            <AutoCompleteDropdown label='Dropoff' style={flexStyles} />}
         </CardContent>
         <CardContent>
           <p>
@@ -62,8 +72,9 @@ class ZoneCardView extends React.Component {
 }
 
 class ZoneCardContainer extends React.Component {
+
   render() {
-    return <ZoneCardView {...this.state} />;
+    return <ZoneCardView pickupSelection={this.props.pickupSelection} dropoffSelection={this.props.dropoffSelection} />;
   }
 }
 

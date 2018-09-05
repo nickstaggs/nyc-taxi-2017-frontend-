@@ -19,7 +19,7 @@ class ToolbarView extends React.Component {
     return (
       <div style={styles}>
         <h2>NYC Yellow Taxi 2017 Data</h2>
-        <ZoneCard />
+        <ZoneCard pickupSelection={this.props.pickupSelection} dropoffSelection={this.props.dropoffSelection} />
       </div>
     );
   }
@@ -32,7 +32,7 @@ class ToolbarView extends React.Component {
 class ToolbarContainer extends React.Component {
 
   render() {
-    return <ToolbarView {...this.state} />;
+    return  <ToolbarView {...this.state} pickupSelection={this.props.pickupSelection} dropoffSelection={this.props.dropoffSelection} />;
   }
 }
 

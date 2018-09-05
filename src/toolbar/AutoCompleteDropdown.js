@@ -9,43 +9,6 @@ import Paper from '@material-ui/core/Paper';
 import MenuItem from '@material-ui/core/MenuItem';
 import Chip from '@material-ui/core/Chip';
 
-// const suggestions = [
-//     { label: 'Afghanistan' },
-//     { label: 'Aland Islands' },
-//     { label: 'Albania' },
-//     { label: 'Algeria' },
-//     { label: 'American Samoa' },
-//     { label: 'Andorra' },
-//     { label: 'Angola' },
-//     { label: 'Anguilla' },
-//     { label: 'Antarctica' },
-//     { label: 'Antigua and Barbuda' },
-//     { label: 'Argentina' },
-//     { label: 'Armenia' },
-//     { label: 'Aruba' },
-//     { label: 'Australia' },
-//     { label: 'Austria' },
-//     { label: 'Azerbaijan' },
-//     { label: 'Bahamas' },
-//     { label: 'Bahrain' },
-//     { label: 'Bangladesh' },
-//     { label: 'Barbados' },
-//     { label: 'Belarus' },
-//     { label: 'Belgium' },
-//     { label: 'Belize' },
-//     { label: 'Benin' },
-//     { label: 'Bermuda' },
-//     { label: 'Bhutan' },
-//     { label: 'Bolivia, Plurinational State of' },
-//     { label: 'Bonaire, Sint Eustatius and Saba' },
-//     { label: 'Bosnia and Herzegovina' },
-//     { label: 'Botswana' },
-//     { label: 'Bouvet Island' },
-//     { label: 'Brazil' },
-//     { label: 'British Indian Ocean Territory' },
-//     { label: 'Brunei Darussalam' },
-// ];
-
 function renderInput(inputProps) {
     const { InputProps, classes, ref, ...other } = inputProps;
 
@@ -162,11 +125,11 @@ class AutoCompleteDropdown extends React.Component {
 
     renderAutoCompleteDropdown() {
         const { classes, label} = this.props;
-        const floatDir = label == "Pickup" ? "Left" : "Right"
+        const floatDir = label == "Pickup" ? "Left" : "Right";
 
         return (
             <div className={classes.root + " float" + floatDir}>
-                <Downshift>
+                <Downshift selectedItem={this.props.selection} itemToString={(item) => { return item.name;}}>
                     {({ getInputProps, getItemProps, isOpen, inputValue, selectedItem, highlightedIndex }) => (
                         <div className={classes.container}>
                             {renderInput({
