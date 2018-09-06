@@ -28,7 +28,7 @@ function renderInput(inputProps) {
 
 function renderSuggestion({ suggestion, index, itemProps, highlightedIndex, selectedItem }) {
     const isHighlighted = highlightedIndex === index;
-    const isSelected = (selectedItem || '').indexOf(suggestion.label) > -1;
+    const isSelected = (selectedItem !== null ? selectedItem.label : '').indexOf(suggestion.label) > -1;
 
     return (
         <MenuItem
@@ -129,7 +129,10 @@ class AutoCompleteDropdown extends React.Component {
 
         return (
             <div className={classes.root + " float" + floatDir}>
-                <Downshift selectedItem={this.props.selection} itemToString={(item) => { return item.name;}}>
+                <Downshift  selectedItem={this.props.selection} 
+                            itemToString={(item) => { return (item == null ? '' : item.label); }} 
+                            onChange={(item) => {this.setState({selectedItem: item});
+                                                 return item;}}>
                     {({ getInputProps, getItemProps, isOpen, inputValue, selectedItem, highlightedIndex }) => (
                         <div className={classes.container}>
                             {renderInput({

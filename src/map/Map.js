@@ -98,7 +98,7 @@ class MapContainer extends React.Component {
     let zones = _.map(Nyc.features, (feature, i) => {
 
       let p = path(feature);
-      return <path d={p} onClick={() => this.props.updateSelection({name: feature.properties.zone, key: i})} key={i} locationid={feature.properties.locationid}
+      return <path d={p} onClick={() => this.props.updateSelection({label: feature.properties.zone, key: i})} key={i} locationid={feature.properties.locationid}
                             zone={feature.properties.zone}
                             className={feature.properties.borough}>
                 <title>{feature.properties.zone}</title>        
