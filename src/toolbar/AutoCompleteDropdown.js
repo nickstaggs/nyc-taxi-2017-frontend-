@@ -97,6 +97,8 @@ let popperNode;
 
 class AutoCompleteDropdown extends React.Component {
 
+    state = {selection: this.props.selection}
+
     componentDidMount() {
         const zonesUrl = "http://localhost:8080/api/zones/";
         fetch(zonesUrl)
@@ -115,6 +117,12 @@ class AutoCompleteDropdown extends React.Component {
             );
     }
 
+    componentDidUpdate(prevProps) {
+        if (this.props.selection !== prevProps.selection) {
+            this.changeSelection(this.props.selection);
+        }
+    }
+
     renderLoading() {
         return <div>Loading...</div>;
     }
@@ -123,16 +131,19 @@ class AutoCompleteDropdown extends React.Component {
         return <div>I'm sorry please try again.</div>;
     }
 
+    changeSelection = (item) => {
+        this.setState({selection: item});
+    }
+
     renderAutoCompleteDropdown() {
         const { classes, label} = this.props;
         const floatDir = label == "Pickup" ? "Left" : "Right";
 
         return (
             <div className={classes.root + " float" + floatDir}>
-                <Downshift  selectedItem={this.props.selection} 
+                <Downshift  selectedItem={this.state.selection} 
                             itemToString={(item) => { return (item == null ? '' : item.label); }} 
-                            onChange={(item) => {this.setState({selectedItem: item});
-                                                 return item;}}>
+                            onSelect={(selectedItem, state) => this.changeSelection(selectedItem)}>
                     {({ getInputProps, getItemProps, isOpen, inputValue, selectedItem, highlightedIndex }) => (
                         <div className={classes.container}>
                             {renderInput({
@@ -149,7 +160,7 @@ class AutoCompleteDropdown extends React.Component {
                                         renderSuggestion({
                                             suggestion,
                                             index,
-                                            itemProps: getItemProps({ item: suggestion.label }),
+                                            itemProps: getItemProps({ item: suggestion}),
                                             highlightedIndex,
                                             selectedItem,
                                         }),
