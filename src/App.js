@@ -12,8 +12,8 @@ class AppView extends React.Component {
   renderApp() {
     return (
       <div style={styles} className="App">
-        <Toolbar pickupSelection={this.props.pickupSelection} dropoffSelection={this.props.dropoffSelection}/>
-        <Map updateSelection={this.props.updateSelection} />
+        <Toolbar {...this.props}/>
+        <Map {...this.props} />
       </div>
     );
   }
@@ -25,21 +25,19 @@ class AppView extends React.Component {
 
 class AppContainer extends React.Component {
 
-  state = { pickupSelection: null, dropoffSelection: null, pickupLastSelected: false}
+  state = { pickupSelection: null, dropoffSelection: null}
 
-  updateSelection = (zone) => {
-    if (!this.state.pickupLastSelected) {
-      this.setState({ pickupSelection: zone });
-      this.setState({ pickupLastSelected : true });
-    }
-    else {
-      this.setState({ dropoffSelection: zone });
-      this.setState({ pickupLastSelected: false });
-    }
+  updatePickupSelection = (zone) => {
+    this.setState({ pickupSelection : zone});
+  }
+
+  updateDropoffSelection = (zone) => {
+    this.setState({ dropoffSelection : zone });
   }
 
   render() {
-    return <AppView {...this.state} updateSelection={this.updateSelection} />;
+    return <AppView {...this.state} updatePickupSelection={this.updatePickupSelection} 
+                                    updateDropoffSelection={this.updateDropoffSelection} />;
   }
 }
 

@@ -6,76 +6,136 @@ import CardContent from '@material-ui/core/CardContent';
 import Switch from '@material-ui/core/Switch';
 import AutoCompleteDropdown from './AutoCompleteDropdown.js';
 import Icon from '@material-ui/core/Icon';
+import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography'
+import CardActions from '@material-ui/core/CardActions';
+import SubmitButton from './SubmitButton';
 
 const styles = {
-  margin:'5%',
-  overflow: 'visible'
+    margin: '5%',
+    overflow: 'visible'
 }
 
 const flexStyles = {
-  flexShrink: 1
+    flexShrink: 1
 }
 
 const arrowStyles = {
-  flexShrink: 1,
-  marginTop: '3%'
+    flexShrink: 1,
+    marginTop: '3%'
 }
 
 const contentStyles = {
-  flex: 1,
-  flexDirection: 'row',
-  justifyContent: 'space-between'
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'space-between'
 }
 
 class ZoneCardView extends React.Component {
 
-  renderLoading() {
-    return <div>Loading...</div>;
-  }
+    renderLoading() {
+        return <div>Loading...</div>;
+    }
 
-  renderError() {
-    return <div>I'm sorry please try again.</div>;
-  }
+    renderError() {
+        return <div>I'm sorry please try again.</div>;
+    }
 
-  pickupSelected = () => {this.props.pickupSelection !== null;}
+    pickupSelected = () => { this.props.pickupSelection !== null; }
 
-  dropoffSelected = () => { this.props.dropoffSelection !== null; }
+    dropoffSelected = () => { this.props.dropoffSelection !== null; }
 
-  renderZoneCard() {
-    return (
-      <Card style={styles}>
-        
-        <CardContent style={contentStyles}>
-          {this.pickupSelected ? 
-            <AutoCompleteDropdown label='Pickup' style={flexStyles} selection={this.props.pickupSelection} />
-            :
-            <AutoCompleteDropdown label='Pickup' style={flexStyles}/>}
-          <Icon style={arrowStyles}>arrow_forward</Icon>
-          {this.dropoffSelected ?
-            <AutoCompleteDropdown label='Dropoff' style={flexStyles} selection={this.props.dropoffSelection} />
-            :
-            <AutoCompleteDropdown label='Dropoff' style={flexStyles} />}
-        </CardContent>
-        <CardContent>
-          <p>
-            Press Submit to see data for the selected route.
-          </p>
-        </CardContent>
-      </Card>
-    );
-  }
+    renderZoneCard() {
+        var rows = [];
+        if (this .props.routes != null) {
+            for(var key in this.props.routes) {
+                rows.push(<p>Total rides is {this.props.routes[key].totalRides}</p>)
+            }
+        }
 
-  render() {
-    return this.renderZoneCard();
-  }
+        return (
+            <Card style={styles}>
+
+                <CardContent style={contentStyles}>
+                    {this.pickupSelected ?
+                        <AutoCompleteDropdown label='Pickup' style={flexStyles} selection={this.props.pickupSelection} />
+                        :
+                        <AutoCompleteDropdown label='Pickup' style={flexStyles} />}
+                    <Icon style={arrowStyles}>arrow_forward</Icon>
+                    {this.dropoffSelected ?
+                        <AutoCompleteDropdown label='Dropoff' style={flexStyles} selection={this.props.dropoffSelection} />
+                        :
+                        <AutoCompleteDropdown label='Dropoff' style={flexStyles} />}
+                </CardContent>
+                <CardContent>
+                    {
+                        this.props.loading 
+                        ? <p>...Loading</p> 
+                        : (
+
+                            this.props.error
+                            ? <p>Oops... Something went wrong</p>
+                            : (
+
+                                this.props.routes == null
+                                ? <p>Press Submit to see data for the selected route.</p>
+                                : <div>{rows}</div>
+                            )
+                        )
+                    }
+                </CardContent>
+                <CardActions>
+                    <SubmitButton onClick={this.props.submit}/>
+                </CardActions>
+            </Card>
+        );
+    }
+
+    render() {
+        return this.renderZoneCard();
+    }
 }
 
 class ZoneCardContainer extends React.Component {
+    state = {loading: false, error: false, routes: null};
 
-  render() {
-    return <ZoneCardView pickupSelection={this.props.pickupSelection} dropoffSelection={this.props.dropoffSelection} />;
-  }
+    submit = () => {
+        this.setState({loading : true });
+        let routesUrl = "http://localhost:8080/api/routes?";
+        let parameters = { dropoffLocationId: this.props.pickupSelection, pickupLocationId: this.props.dropoffSelection }
+        let isFirstParameter = true;
+
+        for (var parameter in parameters) {
+            if (parameters.hasOwnProperty(parameter)) {
+
+                if (!isFirstParameter) {
+                    routesUrl += "&"
+                }
+
+                routesUrl += parameter + "=" + parameters[parameter].key;
+
+                isFirstParameter = false;
+            }
+        }
+
+        fetch(routesUrl)
+            .then(res => res.json())
+            .then(
+                routes => {
+                    this.setState({loading : false, routes: routes});
+                }
+            )
+            .catch(
+                error => {
+                    this.setState({error : true, loading : false});
+                }
+            )
+
+    }
+
+    render() {
+        return <ZoneCardView {...this.props} {...this.state} submit={this.submit} />;
+    }
 }
 
 export default ZoneCardContainer;

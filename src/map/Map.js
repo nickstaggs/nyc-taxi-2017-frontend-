@@ -69,7 +69,7 @@ class MapView extends React.Component {
 }
 
 class MapContainer extends React.Component {
-  state = { loading: true, map: [] };
+  state = { loading: true, map: [], pickupLastSelected: false };
 
   componentDidMount() {
 
@@ -98,7 +98,7 @@ class MapContainer extends React.Component {
     let zones = _.map(Nyc.features, (feature, i) => {
 
       let p = path(feature);
-      return <path d={p} onClick={() => this.props.updateSelection({label: feature.properties.zone, key: i})} key={i} locationid={feature.properties.locationid}
+      return <path d={p} onClick={() => this.updateSelection({label: feature.properties.zone, key: i})} key={i} locationid={feature.properties.locationid}
                             zone={feature.properties.zone}
                             className={feature.properties.borough}>
                 <title>{feature.properties.zone}</title>        
@@ -106,6 +106,17 @@ class MapContainer extends React.Component {
     });
 
     this.setState( {loading: false, map: zones} );
+  }
+
+  updateSelection = (zone) => {
+    if (!this.state.pickupLastSelected) {
+      this.props.updatePickupSelection(zone);
+      this.setState({ pickupLastSelected: true });
+    }
+    else {
+      this.props.updateDropoffSelection(zone);
+      this.setState({ pickupLastSelected: false });
+    }
   }
 
   render() {
