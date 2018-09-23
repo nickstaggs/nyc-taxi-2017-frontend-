@@ -33,7 +33,7 @@ function renderSuggestion({ suggestion, index, itemProps, highlightedIndex, sele
     return (
         <MenuItem
             {...itemProps}
-            key={suggestion.label}
+            key={suggestion.key}
             selected={isHighlighted}
             component="div"
             style={{
@@ -106,8 +106,10 @@ class AutoCompleteDropdown extends React.Component {
             .then(
                 zones => {
                     var zoneNameKeys = zones.map(zone => {
-                        return {key: zone.locationId, label: zone.zone};
+                        return {locationId: zone.locationId, label: zone.zone};
                     });
+
+                    zoneNameKeys.unshift({locationId: 0, label: 'Any'})
 
                     this.setState({zones: zoneNameKeys});
                 },
@@ -119,7 +121,7 @@ class AutoCompleteDropdown extends React.Component {
 
     componentDidUpdate(prevProps) {
         if (this.props.selection !== prevProps.selection) {
-            this.changeSelection(this.props.selection);
+            this.setState({ selection: this.props.selection });
         }
     }
 
@@ -132,7 +134,7 @@ class AutoCompleteDropdown extends React.Component {
     }
 
     changeSelection = (item) => {
-        this.setState({selection: item});
+        this.props.updateSelection(item);
     }
 
     renderAutoCompleteDropdown() {
@@ -141,7 +143,7 @@ class AutoCompleteDropdown extends React.Component {
 
         return (
             <div className={classes.root + " float" + floatDir}>
-                <Downshift  selectedItem={this.state.selection} 
+                <Downshift  selectedItem={this.props.selection} 
                             itemToString={(item) => { return (item == null ? '' : item.label); }} 
                             onSelect={(selectedItem, state) => this.changeSelection(selectedItem)}>
                     {({ getInputProps, getItemProps, isOpen, inputValue, selectedItem, highlightedIndex }) => (

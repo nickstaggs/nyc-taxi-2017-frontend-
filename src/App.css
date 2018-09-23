@@ -40,6 +40,10 @@ path:hover {
     fill-opacity: 1;
 }
 
+.selected {
+  fill-opacity: 1;
+}
+
 .Manhattan {
     fill: red;
 }

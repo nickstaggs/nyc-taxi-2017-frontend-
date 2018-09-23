@@ -47,9 +47,9 @@ class ZoneCardView extends React.Component {
 
     renderZoneCard() {
         var rows = [];
-        if (this .props.routes != null) {
+        if (this.props.routes != null) {
             for(var key in this.props.routes) {
-                rows.push(<p>Total rides is {this.props.routes[key].totalRides}</p>)
+                rows.push(<p key={key}>Total rides is {this.props.routes[key].totalRides}</p>)
             }
         }
 
@@ -58,12 +58,12 @@ class ZoneCardView extends React.Component {
 
                 <CardContent style={contentStyles}>
                     {this.pickupSelected ?
-                        <AutoCompleteDropdown label='Pickup' style={flexStyles} selection={this.props.pickupSelection} />
+                        <AutoCompleteDropdown label='Pickup' style={flexStyles} selection={this.props.pickupSelection} updateSelection={this.props.updatePickupSelection} />
                         :
                         <AutoCompleteDropdown label='Pickup' style={flexStyles} />}
                     <Icon style={arrowStyles}>arrow_forward</Icon>
                     {this.dropoffSelected ?
-                        <AutoCompleteDropdown label='Dropoff' style={flexStyles} selection={this.props.dropoffSelection} />
+                        <AutoCompleteDropdown label='Dropoff' style={flexStyles} selection={this.props.dropoffSelection} updateSelection={this.props.updateDropoffSelection}/>
                         :
                         <AutoCompleteDropdown label='Dropoff' style={flexStyles} />}
                 </CardContent>
@@ -102,19 +102,20 @@ class ZoneCardContainer extends React.Component {
     submit = () => {
         this.setState({loading : true });
         let routesUrl = "http://localhost:8080/api/routes?";
-        let parameters = { dropoffLocationId: this.props.pickupSelection, pickupLocationId: this.props.dropoffSelection }
+        let parameters = { dropoffLocationId: this.props.dropoffSelection, pickupLocationId: this.props.pickupSelection }
         let isFirstParameter = true;
 
         for (var parameter in parameters) {
             if (parameters.hasOwnProperty(parameter)) {
+                if (parameters[parameter].locationId != 0) {
+                    if (!isFirstParameter) {
+                        routesUrl += "&"
+                    }
 
-                if (!isFirstParameter) {
-                    routesUrl += "&"
+                    routesUrl += parameter + "=" + parameters[parameter].locationId;
+
+                    isFirstParameter = false;
                 }
-
-                routesUrl += parameter + "=" + parameters[parameter].key;
-
-                isFirstParameter = false;
             }
         }
 
