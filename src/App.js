@@ -25,19 +25,24 @@ class AppView extends React.Component {
 
 class AppContainer extends React.Component {
 
-  state = { pickupSelection: null, dropoffSelection: null}
+  state = { pickupSelection: null, dropoffSelection: null, chloroplethData: null }
 
   updatePickupSelection = (zone) => {
-    this.setState({ pickupSelection : zone});
+    this.setState({ pickupSelection : zone });
   }
 
   updateDropoffSelection = (zone) => {
     this.setState({ dropoffSelection : zone });
   }
 
+  updateChloroplethData = (data) => {
+    this.setState({ chloroplethData : data });
+  }
+
   render() {
     return <AppView {...this.state} updatePickupSelection={this.updatePickupSelection} 
-                                    updateDropoffSelection={this.updateDropoffSelection} />;
+                                    updateDropoffSelection={this.updateDropoffSelection} 
+                                    updateChloroplethData={this.updateChloroplethData}/>;
   }
 }
 

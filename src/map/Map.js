@@ -67,24 +67,9 @@ class MapView extends React.Component {
 class MapContainer extends React.Component {
     state = { loading: true, map: [], pickupLastSelected: false };
 
-    //   componentDidUpdate(prevProps) {
-    //       if (prevProps.pickupSelection !== this.props.pickupSelection) {
-    //           if (this.props.pickupSelection !== null) {
-    //               this.state.map[this.props.pickupSelection.key].props.className = 'selected'
-    //           }
-    //       }
-
-    //       if (prevProps.dropoffSelection !== this.props.dropoffSelection) {
-    //           if (this.props.dropoffSelection !== null) {
-    //               this.state.map[this.props.dropoffSelection.key].props.className = 'selected'
-    //           }
-    //       }
-    //   }
-
     componentDidUpdate(prevProps) {
         
-        if (prevProps.pickupSelection !== this.props.pickupSelection || 
-            prevProps.dropoffSelection !== this.props.dropoffSelection) {
+        if (prevProps !== this.props) {
 
             this.buildMap();
         }
@@ -108,6 +93,11 @@ class MapContainer extends React.Component {
             this.props.updateDropoffSelection(zone);
             this.setState({ pickupLastSelected: false });
         }
+    }
+
+    calculateOpacity = (id) => {
+        let percentageOfMaxRides = this.props.chloroplethData.data.get(id) / this.props.chloroplethData.totalRides;
+        return percentageOfMaxRides > .03 ? percentageOfMaxRides : .03;
     }
 
     buildMap = () => {
@@ -136,11 +126,36 @@ class MapContainer extends React.Component {
         let zones = _.map(Nyc.features, (feature, i) => {
 
             let p = path(feature);
-            return <path d={p} onClick={() => this.updateSelection({ label: feature.properties.zone, locationId: feature.properties.locationid })} key={i} locationid={feature.properties.locationid}
-                zone={feature.properties.zone}
-                className={this.isSelected(feature.properties.locationid) ? "selected" : feature.properties.borough}>
-                <title>{feature.properties.zone}</title>
-            </path>;
+            return this.props.chloroplethData === null 
+            ? 
+                <path 
+                    d={p} 
+                    onClick={() => this.updateSelection({ label: feature.properties.zone, locationId: feature.properties.locationid })} 
+                    key={i} 
+                    locationid={feature.properties.locationid}
+                    fillOpacity={.25}
+                    stroke="black"
+                    zone={feature.properties.zone}
+                    className={this.isSelected(feature.properties.locationid) ? "selected" : feature.properties.borough}>
+                    <title>{feature.properties.zone}</title>
+                </path>
+            :
+                <path 
+                    d={p} 
+                    onClick={() => this.updateSelection({ label: feature.properties.zone, locationId: feature.properties.locationid })} 
+                    key={i} 
+                    locationid={feature.properties.locationid}
+                    zone={feature.properties.zone}
+                    fill="blue" 
+                    fillOpacity={this.calculateOpacity(feature.properties.locationid)}
+                    stroke="gold"
+                    strokeWidth={this.isSelected(feature.properties.locationid) ? .5 : 0}>
+                    <title>
+                        {feature.properties.zone 
+                        + " " 
+                        + this.props.chloroplethData.data.get(feature.properties.locationid)}
+                    </title>
+                </path>;
         });
 
         this.setState({ loading: false, map: zones });

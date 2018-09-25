@@ -10,6 +10,8 @@ import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography'
 import CardActions from '@material-ui/core/CardActions';
 import SubmitButton from './SubmitButton';
+import * as _ from 'lodash';
+import MapContainer from '../map/Map';
 
 const styles = {
     margin: '5%',
@@ -123,7 +125,25 @@ class ZoneCardContainer extends React.Component {
             .then(res => res.json())
             .then(
                 routes => {
-                    this.setState({loading : false, routes: routes});
+                    if (routes.length === 1) {
+                        this.props.updateChloroplethData(null);
+                        this.setState({ loading: false, routes: routes, error: false });
+                    }
+                    else {
+                        var totalRides = 0;
+                        let data = new Map();
+                        _.map(routes, (route, i) => {
+                            totalRides = totalRides > route.totalRides ? totalRides : route.totalRides;
+                            let id = (parameters.dropoffLocationId.locationId !== 0
+                                ? route.pickupLocationId
+                                : route.dropoffLocationId);
+                            data.set(id, route.totalRides);
+                        });
+
+
+                        this.props.updateChloroplethData({data, totalRides});
+                        this.setState({ loading: false, error: false });
+                    }
                 }
             )
             .catch(

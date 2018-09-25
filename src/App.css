@@ -28,14 +28,6 @@
   to { transform: rotate(360deg); }
 }
 
-svg {
-  fill-opacity: .25;
-}
-
-svg path {
-  stroke: black;
-}
-
 path:hover {
     fill-opacity: 1;
 }
