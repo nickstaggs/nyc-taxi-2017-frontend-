@@ -68,6 +68,10 @@ class ZoneCardView extends React.Component {
                         <AutoCompleteDropdown label='Dropoff' style={flexStyles} selection={this.props.dropoffSelection} updateSelection={this.props.updateDropoffSelection}/>
                         :
                         <AutoCompleteDropdown label='Dropoff' style={flexStyles} />}
+                    {this.props.validationError ?
+                        <p style={{color: 'red'}}>You must choose at least one of these.</p>
+                        : 
+                        null}
                 </CardContent>
                 <CardContent>
                     {
@@ -99,17 +103,25 @@ class ZoneCardView extends React.Component {
 }
 
 class ZoneCardContainer extends React.Component {
-    state = {loading: false, error: false, routes: null};
+    state = {loading: false, error: false, routes: null, validationError: false};
 
     submit = () => {
         this.setState({loading : true });
         let routesUrl = "http://localhost:8080/api/routes?";
+
+        if (this.props.dropoffSelection === null && 
+            this.props.pickupSelection === null) {
+
+            this.setState({ loading: false, validationError: true });
+            return;
+        }
+
         let parameters = { dropoffLocationId: this.props.dropoffSelection, pickupLocationId: this.props.pickupSelection }
         let isFirstParameter = true;
 
         for (var parameter in parameters) {
             if (parameters.hasOwnProperty(parameter)) {
-                if (parameters[parameter].locationId != 0) {
+                if (parameters[parameter] !== null && parameters[parameter].locationId !== 0) {
                     if (!isFirstParameter) {
                         routesUrl += "&"
                     }
@@ -142,13 +154,13 @@ class ZoneCardContainer extends React.Component {
 
 
                         this.props.updateChloroplethData({data, totalRides});
-                        this.setState({ loading: false, error: false });
+                        this.setState({ loading: false, error: false, validationError: false });
                     }
                 }
             )
             .catch(
                 error => {
-                    this.setState({error : true, loading : false});
+                    this.setState({ error: true, loading: false, validationError: false });
                 }
             )
 
