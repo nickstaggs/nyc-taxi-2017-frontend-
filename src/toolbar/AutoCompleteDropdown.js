@@ -1,13 +1,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import keycode from 'keycode';
 import Downshift from 'downshift';
 import { withStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
-import Popper from '@material-ui/core/Popper';
 import Paper from '@material-ui/core/Paper';
 import MenuItem from '@material-ui/core/MenuItem';
-import Chip from '@material-ui/core/Chip';
 
 function renderInput(inputProps) {
     const { InputProps, classes, ref, ...other } = inputProps;
@@ -33,14 +30,15 @@ function renderSuggestion({ suggestion, index, itemProps, highlightedIndex, sele
     return (
         <MenuItem
             {...itemProps}
-            key={suggestion.key}
+            key={suggestion.locationId}
             selected={isHighlighted}
             component="div"
             style={{
                 fontWeight: isSelected ? 500 : 400,
-            }}
-        >
-            {suggestion.label}
+                fontFamily: 'inherit',
+                padding: '5px'
+            }}>
+            {truncateString(suggestion.label)}
         </MenuItem>
     );
 }
@@ -68,12 +66,21 @@ function getSuggestions(inputValue, suggestions) {
     });
 }
 
+const truncateString = (str) => {
+    if (typeof (str) === "string") {
+        if (str.length > 12) {
+            str = str.substring(0, 9) + "...";
+        }
+    }
+    return str;
+}
+
 
 const styles = theme => ({
     root: {
         flexGrow: 1,
         height: 0,
-        width: '35%'
+        width: '39%'
     },
     container: {
         flexGrow: 1,
@@ -90,10 +97,9 @@ const styles = theme => ({
     },
     inputRoot: {
         flexWrap: 'wrap',
+        fontFamily: 'inherit'
     },
 });
-
-let popperNode;
 
 class AutoCompleteDropdown extends React.Component {
 
@@ -139,12 +145,12 @@ class AutoCompleteDropdown extends React.Component {
 
     renderAutoCompleteDropdown() {
         const { classes, label} = this.props;
-        const floatDir = label == "Pickup" ? "Left" : "Right";
+        const floatDir = label === "Pickup" ? "Left" : "Right";
 
         return (
             <div className={classes.root + " float" + floatDir}>
                 <Downshift  selectedItem={this.props.selection} 
-                            itemToString={(item) => { return (item == null ? '' : item.label); }} 
+                            itemToString={(item) => { return (item == null ? '' : truncateString(item.label)); }} 
                             onSelect={(selectedItem, state) => this.changeSelection(selectedItem)}>
                     {({ getInputProps, getItemProps, isOpen, inputValue, selectedItem, highlightedIndex }) => (
                         <div className={classes.container}>
