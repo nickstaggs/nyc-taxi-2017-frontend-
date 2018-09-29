@@ -144,9 +144,12 @@ class ZoneCardContainer extends React.Component {
                     else {
                         var totalRides = 0;
                         let data = new Map();
+
                         _.map(routes, (route, i) => {
                             totalRides = totalRides > route.totalRides ? totalRides : route.totalRides;
-                            let id = (parameters.dropoffLocationId.locationId !== 0
+
+                            // Figure out which id to map to show color opacities for each zone
+                            let id = ((parameters.dropoffLocationId !== null && parameters.dropoffLocationId.locationId !== 0)
                                 ? route.pickupLocationId
                                 : route.dropoffLocationId);
                             data.set(id, route.totalRides);
