@@ -157,7 +157,7 @@ class ZoneCardContainer extends React.Component {
 
 
                         this.props.updateChloroplethData({data, totalRides});
-                        this.setState({ loading: false, error: false, validationError: false });
+                        this.setState({ loading: false, error: false, validationError: false, routes: null });
                     }
                 }
             )
