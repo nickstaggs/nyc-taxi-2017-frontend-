@@ -69,7 +69,7 @@ class ZoneCardView extends React.Component {
                         :
                         <AutoCompleteDropdown label='Dropoff' style={flexStyles} />}
                     {this.props.validationError ?
-                        <p style={{color: 'red'}}>You must choose at least one of these.</p>
+                        <p style={{color: 'red'}}>You must choose a specific zone for at least one of these.</p>
                         : 
                         null}
                 </CardContent>
@@ -109,8 +109,8 @@ class ZoneCardContainer extends React.Component {
         this.setState({loading : true });
         let routesUrl = "http://localhost:8080/api/routes?";
 
-        if (this.props.dropoffSelection === null && 
-            this.props.pickupSelection === null) {
+        if ((this.props.dropoffSelection === null || this.props.dropoffSelection.locationId === 0) && 
+            (this.props.pickupSelection === null || this.props.pickupSelection.locationId === 0)) {
 
             this.setState({ loading: false, validationError: true });
             return;
