@@ -35,7 +35,7 @@ class MapView extends React.Component {
     zoomed() {
         var g = d3.select("g");
 
-        g.style("stroke-width", 1.5 / d3.event.transform.k + "px");
+        g.style("stroke-width", .25 / d3.event.transform.k + "px");
         g.attr("transform", d3.event.transform);
     }
 
@@ -96,7 +96,7 @@ class MapContainer extends React.Component {
     }
 
     calculateOpacity = (id) => {
-        let percentageOfMaxRides = this.props.chloroplethData.data.get(id) / this.props.chloroplethData.totalRides;
+        let percentageOfMaxRides = this.props.chloroplethData.data.get(id) / this.props.chloroplethData.maxRides;
         return percentageOfMaxRides > .03 ? percentageOfMaxRides : .03;
     }
 
@@ -153,7 +153,7 @@ class MapContainer extends React.Component {
                     <title>
                         {feature.properties.zone 
                         + " " 
-                        + this.props.chloroplethData.data.get(feature.properties.locationid)}
+                        + this.props.chloroplethData.data.get(feature.properties.locationid).toLocaleString(undefined, { minimumFractionDigits: 0 })}
                     </title>
                 </path>;
         });

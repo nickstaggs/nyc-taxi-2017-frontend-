@@ -48,12 +48,9 @@ class ZoneCardView extends React.Component {
     dropoffSelected = () => { this.props.dropoffSelection !== null; }
 
     renderZoneCard() {
-        var rows = [];
-        if (this.props.routes != null) {
-            for(var key in this.props.routes) {
-                rows.push(<p key={key}>Total rides is {this.props.routes[key].totalRides}</p>)
-            }
-        }
+        
+        const defaultMessage = "Select zones in the dropdown above or by clicking on them on the map. " +
+                                "Then click submit to see data for the selected route.";
 
         return (
             <Card style={styles}>
@@ -83,9 +80,9 @@ class ZoneCardView extends React.Component {
                             ? <p>Oops... Something went wrong</p>
                             : (
 
-                                this.props.routes == null
-                                ? <p>Press Submit to see data for the selected route.</p>
-                                : <div>{rows}</div>
+                                this.props.message === null
+                                ? <p>{defaultMessage}</p>
+                                : <div>{this.props.message}</div>
                             )
                         )
                     }
@@ -103,30 +100,47 @@ class ZoneCardView extends React.Component {
 }
 
 class ZoneCardContainer extends React.Component {
-    state = {loading: false, error: false, routes: null, validationError: false};
+    state = {loading: false, error: false, message: null, validationError: false};
+
+    isSpecificZone = (zone) => {
+        return zone !== null && zone.locationId !== 0;
+    }
+
+    createChoroplethMessage = (maxRides, totalRides, zoneName, isDroppedOff) => {
+        return "This is a choropleth map in which zones are shaded relative to the maximum number of rides "
+            + (isDroppedOff ? "dropped off " : "picked up ")
+            + "in the " + zoneName + " zone and "
+            + (!isDroppedOff ? "dropped off " : "picked up ")
+            + "in another zone "
+            + "which is " + maxRides.toLocaleString(undefined, { minimumFractionDigits: 0 }) + ". "
+            + "The total number of rides "
+            + (isDroppedOff ? "dropped off " : "picked up ")
+            + "in the " + zoneName + " zone "
+            + "is " + totalRides.toLocaleString(undefined, { minimumFractionDigits: 0 }) + ".";
+    }
 
     submit = () => {
-        this.setState({loading : true });
+        this.setState({loading : true }); 
         let routesUrl = "http://localhost:8080/api/routes?";
 
         if ((this.props.dropoffSelection === null || this.props.dropoffSelection.locationId === 0) && 
             (this.props.pickupSelection === null || this.props.pickupSelection.locationId === 0)) {
 
-            this.setState({ loading: false, validationError: true });
+            this.setState({ loading: false, validationError: true, message: null });
             return;
         }
 
-        let parameters = { dropoffLocationId: this.props.dropoffSelection, pickupLocationId: this.props.pickupSelection }
+        let queryParameters = { dropoffLocationId: this.props.dropoffSelection, pickupLocationId: this.props.pickupSelection }
         let isFirstParameter = true;
 
-        for (var parameter in parameters) {
-            if (parameters.hasOwnProperty(parameter)) {
-                if (parameters[parameter] !== null && parameters[parameter].locationId !== 0) {
+        for (var parameter in queryParameters) {
+            if (queryParameters.hasOwnProperty(parameter)) {
+                if (this.isSpecificZone(queryParameters[parameter])) {
                     if (!isFirstParameter) {
                         routesUrl += "&"
                     }
 
-                    routesUrl += parameter + "=" + parameters[parameter].locationId;
+                    routesUrl += parameter + "=" + queryParameters[parameter].locationId;
 
                     isFirstParameter = false;
                 }
@@ -139,25 +153,39 @@ class ZoneCardContainer extends React.Component {
                 routes => {
                     if (routes.length === 1) {
                         this.props.updateChloroplethData(null);
-                        this.setState({ loading: false, routes: routes, error: false });
+                        var rows = [];
+                        
+                        for (var key in routes) {
+                            rows.push(<p key={key}>The total number of rides is {routes[key].totalRides.toLocaleString(undefined, { minimumFractionDigits: 0 })}</p>)
+                        }
+
+                        this.setState({ loading: false, error: false, message: rows });
                     }
                     else {
+                        var maxRides = 0;
                         var totalRides = 0;
+                        const isDropOff = this.isSpecificZone(queryParameters.dropoffLocationId);
                         let data = new Map();
 
                         _.map(routes, (route, i) => {
-                            totalRides = totalRides > route.totalRides ? totalRides : route.totalRides;
+                            maxRides = maxRides > route.totalRides ? maxRides : route.totalRides;
+                            totalRides += route.totalRides;
 
                             // Figure out which id to map to show color opacities for each zone
-                            let id = ((parameters.dropoffLocationId !== null && parameters.dropoffLocationId.locationId !== 0)
+                            let id = isDropOff
                                 ? route.pickupLocationId
-                                : route.dropoffLocationId);
+                                : route.dropoffLocationId;
                             data.set(id, route.totalRides);
                         });
 
+                        var zoneName = isDropOff
+                            ? queryParameters.dropoffLocationId.label
+                            : queryParameters.pickupLocationId.label;
 
-                        this.props.updateChloroplethData({data, totalRides});
-                        this.setState({ loading: false, error: false, validationError: false, routes: null });
+                        var choroplethMessage = this.createChoroplethMessage(maxRides, totalRides, zoneName, isDropOff);
+
+                        this.props.updateChloroplethData({data, maxRides});
+                        this.setState({ loading: false, error: false, validationError: false, message: choroplethMessage });
                     }
                 }
             )
