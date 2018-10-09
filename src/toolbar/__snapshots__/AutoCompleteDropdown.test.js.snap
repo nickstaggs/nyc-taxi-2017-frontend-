@@ -1,0 +1,15 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`should render 1`] = `
+<AutoCompleteDropdown
+  classes={
+    Object {
+      "chip": "AutoCompleteDropdown-chip-4",
+      "container": "AutoCompleteDropdown-container-2",
+      "inputRoot": "AutoCompleteDropdown-inputRoot-5",
+      "paper": "AutoCompleteDropdown-paper-3",
+      "root": "AutoCompleteDropdown-root-1",
+    }
+  }
+/>
+`;

@@ -95,8 +95,8 @@ class MapContainer extends React.Component {
         }
     }
 
-    calculateOpacity = (id) => {
-        let percentageOfMaxRides = this.props.chloroplethData.data.get(id) / this.props.chloroplethData.maxRides;
+    calculateOpacity = (numRides, maxNumRides) => {
+        let percentageOfMaxRides = numRides / maxNumRides;
         return percentageOfMaxRides > .03 ? percentageOfMaxRides : .03;
     }
 
@@ -147,7 +147,7 @@ class MapContainer extends React.Component {
                     locationid={feature.properties.locationid}
                     zone={feature.properties.zone}
                     fill="blue" 
-                    fillOpacity={this.calculateOpacity(feature.properties.locationid)}
+                    fillOpacity={this.calculateOpacity(this.props.chloroplethData.data.get(id), this.props.chloroplethData.maxRides)}
                     stroke="gold"
                     strokeWidth={this.isSelected(feature.properties.locationid) ? .5 : 0}>
                     <title>

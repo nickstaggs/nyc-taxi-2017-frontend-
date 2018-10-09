@@ -1,0 +1,12 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`view should render correctly without props 1`] = `
+<AppView
+  chloroplethData={null}
+  dropoffSelection={null}
+  pickupSelection={null}
+  updateChloroplethData={[Function]}
+  updateDropoffSelection={[Function]}
+  updatePickupSelection={[Function]}
+/>
+`;
