@@ -147,7 +147,7 @@ class MapContainer extends React.Component {
                     locationid={feature.properties.locationid}
                     zone={feature.properties.zone}
                     fill="blue" 
-                    fillOpacity={this.calculateOpacity(this.props.chloroplethData.data.get(id), this.props.chloroplethData.maxRides)}
+                    fillOpacity={this.calculateOpacity(this.props.chloroplethData.data.get(feature.properties.locationid), this.props.chloroplethData.maxRides)}
                     stroke="gold"
                     strokeWidth={this.isSelected(feature.properties.locationid) ? .5 : 0}>
                     <title>
