@@ -1,6 +1,5 @@
 import React from 'react';
 import './../App.css';
-import Rough from 'roughjs';
 import *  as d3 from 'd3';
 import * as _ from 'lodash';
 import Nyc from './nyc-map'
