@@ -106,7 +106,7 @@ class AutoCompleteDropdown extends React.Component {
     state = {selection: this.props.selection}
 
     componentDidMount() {
-        const zonesUrl = "http://localhost:8080/api/zones/";
+        const zonesUrl = process.env.REACT_APP_API_URL + "/zones/";
         fetch(zonesUrl)
             .then(res => res.json())
             .then(
