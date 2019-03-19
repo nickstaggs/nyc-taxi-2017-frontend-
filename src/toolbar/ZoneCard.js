@@ -121,7 +121,7 @@ class ZoneCardContainer extends React.Component {
 
     submit = () => {
         this.setState({loading : true }); 
-        let routesUrl = "http://localhost:8080/api/routes?";
+        let routesUrl = process.env.REACT_APP_API_URL + "/routes?";
 
         if ((this.props.dropoffSelection === null || this.props.dropoffSelection.locationId === 0) && 
             (this.props.pickupSelection === null || this.props.pickupSelection.locationId === 0)) {
