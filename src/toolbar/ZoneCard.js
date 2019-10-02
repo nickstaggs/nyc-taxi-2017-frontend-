@@ -47,50 +47,79 @@ class ZoneCardView extends React.Component {
 
     dropoffSelected = () => { this.props.dropoffSelection !== null; }
 
+
     renderZoneCard() {
-        
         const defaultMessage = "Select zones in the dropdown above or by clicking on them on the map. " +
                                 "Then click submit to see data for the selected route.";
 
-        return (
-            <Card style={styles}>
+        let dropDowns = (
+            <div>
+                {this.pickupSelected ?
+                    <AutoCompleteDropdown label='Pickup' style={flexStyles} selection={this.props.pickupSelection} updateSelection={this.props.updatePickupSelection} />
+                    :
+                    <AutoCompleteDropdown label='Pickup' style={flexStyles} />}
+                <Icon style={arrowStyles}>arrow_forward</Icon>
+                {this.dropoffSelected ?
+                    <AutoCompleteDropdown label='Dropoff' style={flexStyles} selection={this.props.dropoffSelection} updateSelection={this.props.updateDropoffSelection}/>
+                    :
+                    <AutoCompleteDropdown label='Dropoff' style={flexStyles} />}
+                {this.props.validationError ?
+                    <p style={{color: 'red'}}>You must choose a specific zone for at least one of these.</p>
+                    : 
+                    null}
+            </div>
+        );
 
-                <CardContent style={contentStyles}>
-                    {this.pickupSelected ?
-                        <AutoCompleteDropdown label='Pickup' style={flexStyles} selection={this.props.pickupSelection} updateSelection={this.props.updatePickupSelection} />
-                        :
-                        <AutoCompleteDropdown label='Pickup' style={flexStyles} />}
-                    <Icon style={arrowStyles}>arrow_forward</Icon>
-                    {this.dropoffSelected ?
-                        <AutoCompleteDropdown label='Dropoff' style={flexStyles} selection={this.props.dropoffSelection} updateSelection={this.props.updateDropoffSelection}/>
-                        :
-                        <AutoCompleteDropdown label='Dropoff' style={flexStyles} />}
-                    {this.props.validationError ?
-                        <p style={{color: 'red'}}>You must choose a specific zone for at least one of these.</p>
-                        : 
-                        null}
-                </CardContent>
-                <CardContent>
-                    {
-                        this.props.loading 
-                        ? <p>...Loading</p> 
+        let message = (
+            <div className="message">
+                {
+                    this.props.loading 
+                    ? <p>...Loading</p> 
+                    : (
+
+                        this.props.error
+                        ? <p>Oops... Something went wrong</p>
                         : (
-
-                            this.props.error
-                            ? <p>Oops... Something went wrong</p>
+                            this.props.validationError 
+                            ? null
                             : (
-
                                 this.props.message === null
                                 ? <p>{defaultMessage}</p>
                                 : <div>{this.props.message}</div>
                             )
                         )
-                    }
-                </CardContent>
-                <CardActions>
-                    <SubmitButton onClick={this.props.submit}/>
-                </CardActions>
-            </Card>
+                    )
+                }
+            </div>
+        );
+
+        return (
+            <div>
+                <Card style={styles} className="full-card">
+
+                    <CardContent style={contentStyles}>
+                        {dropDowns}
+                    </CardContent>
+                    <CardContent>
+                        {message}
+                    </CardContent>
+                    <CardActions>
+                        <SubmitButton onClick={this.props.submit}/>
+                    </CardActions>
+                </Card>
+
+                {/* Using media query to switch between these two representations of the card */}
+
+                <div className="mobile-card">
+                    <div className="mobile-submit">
+                        <SubmitButton onClick={this.props.submit}  />   
+                    </div>
+                    
+                    {dropDowns}
+                    {message}
+                </div>
+            </div>
+            
         );
     }
 

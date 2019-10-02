@@ -1,6 +1,71 @@
 .App {
   text-align: center;
   font-family: 'Gloria Hallelujah', cursive;
+  display: grid;
+  grid-template-areas: 
+    "toolbar map map";
+
+  grid-template-columns: 33%;
+  grid-template-rows: 100vh;
+}
+
+.mobile-card {
+  display: none;
+}
+
+@media (max-width: 1024px) {
+  .App {
+    grid-template-areas: 
+    "map"
+    "toolbar";
+
+    grid-template-columns: 100vw;
+    grid-template-rows: 60vh 40vh;
+
+    font-family: sans-serif;
+  }
+  
+  .App .toolbar {
+    border-right-style: none;
+    border-top-style: solid;
+    padding: 10px;
+  }
+
+  .toolbar h2 {
+    display: none;
+  }
+
+  .full-card {
+    display: none;
+  }
+
+  div .mobile-card {
+    display: block;
+  }
+
+  .message {
+    text-align: justify;
+  }
+
+  .mobile-submit {
+    background-color: cornflowerblue;
+    position: fixed;
+    bottom: 0%;
+    right: 0%;
+  }
+
+  .material-icons {
+    margin-top: 0%;
+  }
+}
+
+.toolbar {
+  grid-area: toolbar;
+  border-right-style: solid;
+}
+
+.map {
+  grid-area: map;
 }
 
 svg {

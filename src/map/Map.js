@@ -5,13 +5,18 @@ import * as _ from 'lodash';
 import Nyc from './nyc-map'
 
 const styles = {
-    width: "70%",
-    height: "100vh",
-    float: "right",
+    // width: "70%",
+    // height: "100vh",
+    // float: "right",
     overflow: "hidden"
 }
 
 class MapView extends React.Component {
+
+    constructor(props) {
+        super(props);
+        this.mapView = React.createRef()
+    }
 
     renderLoading() {
         return <div>Loading...</div>;
@@ -25,7 +30,7 @@ class MapView extends React.Component {
         var svg = d3.select("svg");
 
         this.zoom = d3.zoom()
-            .scaleExtent([.75, 8])
+            .scaleExtent([.5, 8])
             .on("zoom", this.zoomed);
 
         svg.call(this.zoom);
@@ -41,7 +46,7 @@ class MapView extends React.Component {
     renderMap() {
 
         return (
-            <div id="map" style={styles}>
+            <div id="map" style={styles} ref={this.mapView} className="map">
                 <svg id="nyc-map" height="100%" width="100%">
                     <g>{this.props.map}</g>
                 </svg>
@@ -64,18 +69,27 @@ class MapView extends React.Component {
 }
 
 class MapContainer extends React.Component {
-    state = { loading: true, map: [], pickupLastSelected: false };
+    state = { loading: true, map: [], pickupLastSelected: false, height: 0, width: 0 };
+
+    constructor(props) {
+        super(props);
+        this.myInput = React.createRef()
+    }
 
     componentDidUpdate(prevProps) {
         
-        if (prevProps !== this.props) {
-
-            this.buildMap();
+        if (prevProps !== this.props || 
+            this.myInput.current.mapView.current.offsetHeight !== this.state.height ||
+            this.myInput.current.mapView.current.offsetWidth !== this.state.width) {
+            this.setState({
+                height: this.myInput.current.mapView.current.offsetHeight, 
+                width: this.myInput.current.mapView.current.offsetWidth
+            }, () => this.buildMap());
         }
     }
 
     componentDidMount() {
-
+        
         this.buildMap();
     }
 
@@ -99,7 +113,7 @@ class MapContainer extends React.Component {
         return percentageOfMaxRides > .03 ? percentageOfMaxRides : .03;
     }
 
-    buildMap = () => {
+    buildMap() {
         // let map = this.state.map;
         // let rc = Rough.svg(map, {
         //   async: true,
@@ -108,15 +122,16 @@ class MapContainer extends React.Component {
         //   }
         // });
 
-        var w = 1000;
-        var h = 600;
+        // var w = 1000;
+        // var h = 600;
+        let leastDimension = this.state.width > this.state.height ? this.state.height : this.state.width;
 
         var projection = d3.geoAlbers()
-            .center([1.63, 40.7])
-            .rotate([75.527, 0])
+            .center([0, 40.70])
+            .rotate([73.98, 0])
             .parallels([41, 44])
-            .translate([w / 2, h / 2])
-            .scale(79000);
+            .translate([this.state.width / 2, this.state.height / 2])
+            .scale(leastDimension*125);
 
         //Define path generator
         var path = d3.geoPath()
@@ -161,7 +176,7 @@ class MapContainer extends React.Component {
     }
 
     render() {
-        return <MapView {...this.state} />;
+        return <MapView ref={this.myInput} {...this.state} />;
     }
 }
 
