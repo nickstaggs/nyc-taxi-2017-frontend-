@@ -66,16 +66,6 @@ function getSuggestions(inputValue, suggestions) {
     });
 }
 
-// const truncateString = (str) => {
-//     if (typeof (str) === "string") {
-//         if (str.length > 12) {
-//             str = str.substring(0, 9) + "...";
-//         }
-//     }
-//     return str;
-// }
-
-
 const styles = theme => ({
     root: {
         flexGrow: 1,

@@ -5,9 +5,6 @@ import * as _ from 'lodash';
 import Nyc from './nyc-map'
 
 const styles = {
-    // width: "70%",
-    // height: "100vh",
-    // float: "right",
     overflow: "hidden"
 }
 
@@ -73,17 +70,17 @@ class MapContainer extends React.Component {
 
     constructor(props) {
         super(props);
-        this.myInput = React.createRef()
+        this.mapViewRef = React.createRef()
     }
 
     componentDidUpdate(prevProps) {
         
         if (prevProps !== this.props || 
-            this.myInput.current.mapView.current.offsetHeight !== this.state.height ||
-            this.myInput.current.mapView.current.offsetWidth !== this.state.width) {
+            this.mapViewRef.current.mapView.current.offsetHeight !== this.state.height ||
+            this.mapViewRef.current.mapView.current.offsetWidth !== this.state.width) {
             this.setState({
-                height: this.myInput.current.mapView.current.offsetHeight, 
-                width: this.myInput.current.mapView.current.offsetWidth
+                height: this.mapViewRef.current.mapView.current.offsetHeight, 
+                width: this.mapViewRef.current.mapView.current.offsetWidth
             }, () => this.buildMap());
         }
     }
@@ -122,8 +119,6 @@ class MapContainer extends React.Component {
         //   }
         // });
 
-        // var w = 1000;
-        // var h = 600;
         let leastDimension = this.state.width > this.state.height ? this.state.height : this.state.width;
 
         var projection = d3.geoAlbers()
@@ -176,7 +171,7 @@ class MapContainer extends React.Component {
     }
 
     render() {
-        return <MapView ref={this.myInput} {...this.state} />;
+        return <MapView ref={this.mapViewRef} {...this.state} />;
     }
 }
 
