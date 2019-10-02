@@ -38,7 +38,7 @@ function renderSuggestion({ suggestion, index, itemProps, highlightedIndex, sele
                 fontFamily: 'inherit',
                 padding: '5px'
             }}>
-            {truncateString(suggestion.label)}
+            {suggestion.label}
         </MenuItem>
     );
 }
@@ -66,14 +66,14 @@ function getSuggestions(inputValue, suggestions) {
     });
 }
 
-const truncateString = (str) => {
-    if (typeof (str) === "string") {
-        if (str.length > 12) {
-            str = str.substring(0, 9) + "...";
-        }
-    }
-    return str;
-}
+// const truncateString = (str) => {
+//     if (typeof (str) === "string") {
+//         if (str.length > 12) {
+//             str = str.substring(0, 9) + "...";
+//         }
+//     }
+//     return str;
+// }
 
 
 const styles = theme => ({
@@ -150,7 +150,7 @@ class AutoCompleteDropdown extends React.Component {
         return (
             <div className={classes.root + " float" + floatDir}>
                 <Downshift  selectedItem={this.props.selection} 
-                            itemToString={(item) => { return (item == null ? '' : truncateString(item.label)); }} 
+                            itemToString={(item) => { return (item == null ? '' : item.label); }} 
                             onSelect={(selectedItem, state) => this.changeSelection(selectedItem)}>
                     {({ getInputProps, getItemProps, isOpen, inputValue, selectedItem, highlightedIndex }) => (
                         <div className={classes.container}>
