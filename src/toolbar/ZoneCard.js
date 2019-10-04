@@ -43,9 +43,9 @@ class ZoneCardView extends React.Component {
         return <div>I'm sorry please try again.</div>;
     }
 
-    pickupSelected = () => { this.props.pickupSelection !== null; }
+    pickupSelected = () => { return this.props.pickupSelection !== null; }
 
-    dropoffSelected = () => { this.props.dropoffSelection !== null; }
+    dropoffSelected = () => { return this.props.dropoffSelection !== null; }
 
 
     renderZoneCard() {
