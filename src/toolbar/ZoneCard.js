@@ -95,31 +95,34 @@ class ZoneCardView extends React.Component {
 
         return (
             <div>
-                <Card style={styles} className="full-card">
 
-                    <CardContent style={contentStyles}>
+                {
+                    this.props.isMobile 
+                    ? <div>
+                        <div className="mobile-submit">
+                            <SubmitButton onClick={this.props.submit}  />   
+                        </div>
+                        
                         {dropDowns}
-                    </CardContent>
-                    <CardContent>
                         {message}
-                    </CardContent>
-                    <CardActions>
-                        <SubmitButton onClick={this.props.submit}/>
-                    </CardActions>
-                </Card>
-
-                {/* Using media query to switch between these two representations of the card */}
-
-                <div className="mobile-card">
-                    <div className="mobile-submit">
-                        <SubmitButton onClick={this.props.submit}  />   
                     </div>
+
+                    : <Card style={styles}>
+
+                        <CardContent style={contentStyles}>
+                            {dropDowns}
+                        </CardContent>
+                        <CardContent>
+                            {message}
+                        </CardContent>
+                        <CardActions>
+                            <SubmitButton onClick={this.props.submit}/>
+                        </CardActions>
+                    </Card>
                     
-                    {dropDowns}
-                    {message}
-                </div>
+                    
+                }
             </div>
-            
         );
     }
 
@@ -129,7 +132,26 @@ class ZoneCardView extends React.Component {
 }
 
 class ZoneCardContainer extends React.Component {
-    state = {loading: false, error: false, message: null, validationError: false};
+    state = {
+        loading: false, 
+        error: false, 
+        message: null, 
+        validationError: false, 
+        mq: window.matchMedia('(max-width: 1024px)'),
+        isMobile: window.matchMedia('(max-width: 1024px)').matches
+    };
+
+    constructor(props) {
+        super(props);
+        this.setState({isMobile: this.state.mq.matches});
+        this.state.mq.addListener(e => {
+            this.setState({isMobile: e.matches});
+        });
+    }
+
+    isMobile = (mq) => {
+        return mq.matches;
+    }
 
     isSpecificZone = (zone) => {
         return zone !== null && zone.locationId !== 0;
@@ -227,7 +249,7 @@ class ZoneCardContainer extends React.Component {
     }
 
     render() {
-        return <ZoneCardView {...this.props} {...this.state} submit={this.submit} />;
+        return <ZoneCardView {...this.props} {...this.state} submit={this.submit} isMobile={this.state.isMobile} />;
     }
 }
 
