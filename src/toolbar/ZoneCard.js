@@ -143,7 +143,6 @@ class ZoneCardContainer extends React.Component {
 
     constructor(props) {
         super(props);
-        this.setState({isMobile: this.state.mq.matches});
         this.state.mq.addListener(e => {
             this.setState({isMobile: e.matches});
         });
